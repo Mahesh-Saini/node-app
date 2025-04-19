@@ -19,9 +19,19 @@ const productDetailHtml = fs.readFileSync(
   path.join(srcPathname, "/templates/productDetail.html"),
   "utf-8"
 );
+const mainCss = fs.readFileSync(
+  path.join(srcPathname, "../public/css/main.css")
+);
 const server = http.createServer();
 server.on("request", (req, res) => {
+  if (req.url === "/css/main.css") {
+    res.write(mainCss);
+  }
+});
+
+server.on("request", (req, res) => {
   const { pathname } = url.parse(req.url);
+
   if (req.method === "GET") {
     if (pathname === "/" || pathname === "/home") {
       res.end(homeHtml);
@@ -29,6 +39,10 @@ server.on("request", (req, res) => {
       res.end(productHtml);
     } else if (pathname === "/details") {
       res.end(productDetailHtml);
+    } else if (pathname === "/api/") {
+      res.writeHead(200, { "content-type": "application/json" });
+      res.write(JSON.stringify({ status: "success", message: "hello api" }));
+      res.end();
     } else {
       res.end("<h1>404 Not Found<h1/>");
     }
